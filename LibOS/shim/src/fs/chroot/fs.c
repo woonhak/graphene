@@ -769,8 +769,13 @@ static int chroot_write (struct shim_handle * hdl, const void * buf,
     ret = DkStreamWrite(hdl->pal_handle, file->marker, count, (void *) buf, NULL) ? :
           -PAL_ERRNO;
 
-    if (ret > 0)
+    if (ret > 0){
         file->marker += ret;
+
+		/*if file is extended, then should update file size too*/
+		if(file->marker > file->size)
+			file->size = file->marker;
+	}
 
     unlock(hdl->lock);
 out:
